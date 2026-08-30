@@ -141,8 +141,9 @@ class Telemetry:
 
             # Log estruturado
             if success:
+                log_msg = f"⏱️  {operation}: {elapsed_ms:.2f}ms"
                 self.logger.debug(
-                    f"⏱️  {operation}: {elapsed_ms:.2f}ms",
+                    log_msg,
                     extra={
                         "operation": operation,
                         "elapsed_ms": elapsed_ms,
@@ -150,8 +151,9 @@ class Telemetry:
                     },
                 )
             else:
+                log_msg = f"❌ {operation} FAILED: {error_msg} ({elapsed_ms:.2f}ms)"
                 self.logger.warning(
-                    f"❌ {operation} FAILED: {error_msg} ({elapsed_ms:.2f}ms)",
+                    log_msg,
                     extra={
                         "operation": operation,
                         "elapsed_ms": elapsed_ms,
@@ -186,9 +188,11 @@ class Telemetry:
         # Log com metadados
         if metadata:
             meta_str = ", ".join(f"{k}={v}" for k, v in metadata.items())
-            self.logger.info(f"📌 {event_name}: {meta_str}", extra=metadata)
+            log_msg = f"📌 {event_name}: {meta_str}"
+            self.logger.info(log_msg, extra=metadata)
         else:
-            self.logger.info(f"📌 {event_name}")
+            log_msg = f"📌 {event_name}"
+            self.logger.info(log_msg)
 
     def stats(self) -> dict[str, Any]:
         """

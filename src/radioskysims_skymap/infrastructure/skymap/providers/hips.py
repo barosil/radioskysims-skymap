@@ -87,17 +87,23 @@ class HiPSSkyMapProvider(ContinuumSurveyMapPort):
         """Resolve um identificador de survey para um FITS local."""
 
         if self._base_path is None:
-            raise ValueError(
+            msg = (
                 "HiPSSkyMapProvider requer base_path para "
                 "resolver arquivos locais."
+            )
+            raise ValueError(
+                msg
             )
 
         path = self._base_path / f"{survey_id}.fits"
 
         if not path.is_file():
-            raise FileNotFoundError(
+            msg = (
                 "Arquivo FITS não encontrado para "
                 f"survey_id={survey_id!r}: {path}"
+            )
+            raise FileNotFoundError(
+                msg
             )
 
         return path
@@ -123,8 +129,9 @@ class HiPSSkyMapProvider(ContinuumSurveyMapPort):
             if hdu.data is not None:
                 return hdu
 
+        msg = "O arquivo FITS não contém nenhuma HDU com dados."
         raise ValueError(
-            "O arquivo FITS não contém nenhuma HDU com dados."
+            msg
         )
 
     @staticmethod
@@ -177,9 +184,12 @@ class HiPSSkyMapProvider(ContinuumSurveyMapPort):
                 ]
 
                 if not numeric_columns:
-                    raise ValueError(
+                    msg = (
                         "A tabela FITS HEALPix não possui "
                         "colunas numéricas."
+                    )
+                    raise ValueError(
+                        msg
                     )
 
                 column_name = numeric_columns[0]
@@ -192,8 +202,9 @@ class HiPSSkyMapProvider(ContinuumSurveyMapPort):
         ).reshape(-1)
 
         if vector.size == 0:
+            msg = "O FITS HEALPix contém um dataset vazio."
             raise ValueError(
-                "O FITS HEALPix contém um dataset vazio."
+                msg
             )
 
         return vector
@@ -243,10 +254,13 @@ class HiPSSkyMapProvider(ContinuumSurveyMapPort):
         )
 
         if healpix_data.size != expected_source_npix:
-            raise ValueError(
+            msg = (
                 "Quantidade de pixels incompatível com o NSIDE "
                 f"do FITS: esperado={expected_source_npix}, "
                 f"recebido={healpix_data.size}."
+            )
+            raise ValueError(
+                msg
             )
 
         ordering = str(
@@ -297,15 +311,19 @@ class HiPSSkyMapProvider(ContinuumSurveyMapPort):
         )
 
         if image_data.ndim != 2:
-            raise ValueError(
+            msg = (
                 "O FITS projetado deve conter uma imagem WCS "
                 "bidimensional; "
                 f"shape recebido: {image_data.shape}."
             )
+            raise ValueError(
+                msg
+            )
 
         if not np.any(np.isfinite(image_data)):
+            msg = "A imagem WCS não contém pixels finitos."
             raise ValueError(
-                "A imagem WCS não contém pixels finitos."
+                msg
             )
 
         skymap_data, footprint = reproject_to_healpix(
@@ -328,10 +346,13 @@ class HiPSSkyMapProvider(ContinuumSurveyMapPort):
         expected_npix = target_nside.npix
 
         if skymap_data.size != expected_npix:
-            raise ValueError(
+            msg = (
                 "A reprojeção produziu quantidade inesperada "
                 f"de pixels: esperado={expected_npix}, "
                 f"recebido={skymap_data.size}."
+            )
+            raise ValueError(
+                msg
             )
 
         valid_pixels = (
@@ -349,13 +370,16 @@ class HiPSSkyMapProvider(ContinuumSurveyMapPort):
                 )
             )
 
-            raise ValueError(
+            msg = (
                 "A reprojeção WCS para HEALPix não produziu "
                 "pixels válidos. Isso pode ocorrer quando o "
                 "recorte WCS é menor que a resolução dos pixels "
                 "HEALPix ou quando o cabeçalho WCS é inválido. "
                 f"NSide={target_nside.value}, "
                 f"resolução aproximada={resolution_deg:.3f} graus."
+            )
+            raise ValueError(
+                msg
             )
         # O SkyMap atual não carrega uma máscara ou footprint junto
         # ao dataset. Durante esta implementação inicial, regiões

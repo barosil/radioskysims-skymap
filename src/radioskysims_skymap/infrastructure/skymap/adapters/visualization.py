@@ -39,7 +39,8 @@ class SkyMapVisualizer:
         """
         with _telemetry.measure("plot_map"):
             if not isinstance(skymap, SkyMap):
-                raise TypeError("skymap deve ser uma instância de SkyMap")
+                msg = "skymap deve ser uma instância de SkyMap"
+                raise TypeError(msg)
 
             hp.mollview(
                 skymap.data,
@@ -78,7 +79,8 @@ class SkyMapVisualizer:
         """
         with _telemetry.measure("plot_cls"):
             if not isinstance(cls, np.ndarray):
-                raise TypeError("cls deve ser um numpy.ndarray")
+                msg = "cls deve ser um numpy.ndarray"
+                raise TypeError(msg)
 
             ell = np.arange(len(cls))
 
@@ -121,7 +123,8 @@ class SkyMapVisualizer:
         """
         with _telemetry.measure("save_map"):
             if not isinstance(skymap, SkyMap):
-                raise TypeError("skymap deve ser uma instância de SkyMap")
+                msg = "skymap deve ser uma instância de SkyMap"
+                raise TypeError(msg)
 
             hp.mollview(
                 skymap.data,

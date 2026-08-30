@@ -39,7 +39,8 @@ class FileDownloader:
             response = requests.get(url, timeout=self._timeout)
             response.raise_for_status()
         except requests.RequestException as exc:
-            raise DownloadError(f"Failed to download {url}") from exc
+            msg = f"Failed to download {url}"
+            raise DownloadError(msg) from exc
 
         destination.write_bytes(response.content)
         return destination

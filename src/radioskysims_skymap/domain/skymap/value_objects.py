@@ -47,23 +47,27 @@ class NSide:
     @staticmethod
     def _validate(value: int) -> None:
         if not isinstance(value, int):
+            msg = "NSide deve ser um inteiro"
             raise InvalidNSideError(
-                "NSide deve ser um inteiro"
+                msg
             )
 
         if value < 1:
+            msg = "NSide deve ser >= 1"
             raise InvalidNSideError(
-                "NSide deve ser >= 1"
+                msg
             )
 
         if not hp.isnsideok(value, nest=True):
+            msg = "NSide deve ser potência de 2 (healpy)"
             raise InvalidNSideError(
-                "NSide deve ser potência de 2 (healpy)"
+                msg
             )
 
         if value > 8192:
+            msg = "NSide acima do limite prático (8192)"
             raise InvalidNSideError(
-                "NSide acima do limite prático (8192)"
+                msg
             )
 
     @property
@@ -243,9 +247,12 @@ class SkyMapDataset:
             or is_dask_array
             or is_dask_delayed
         ):
-            raise TypeError(
+            msg = (
                 "Dataset deve ser numpy.ndarray, "
                 "xarray.DataArray, "
                 "dask.array.Array ou "
                 "dask.delayed.Delayed."
+            )
+            raise TypeError(
+                msg
             )

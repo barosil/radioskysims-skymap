@@ -31,23 +31,27 @@ class SkyMapOperations:
         """
 
         if not isinstance(map_data, np.ndarray):
+            msg = "map_data deve ser numpy.ndarray"
             raise AnalysisError(
-                "map_data deve ser numpy.ndarray"
+                msg
             )
 
         if map_data.ndim != 1:
+            msg = "map_data deve ser unidimensional"
             raise AnalysisError(
-                "map_data deve ser unidimensional"
+                msg
             )
 
         if map_data.size == 0:
+            msg = "map_data não pode estar vazio"
             raise AnalysisError(
-                "map_data não pode estar vazio"
+                msg
             )
 
         if not np.all(np.isfinite(map_data)):
+            msg = "map_data contém valores não finitos"
             raise AnalysisError(
-                "map_data contém valores não finitos"
+                msg
             )
 
     # ------------------------------------------------------------------
@@ -66,8 +70,9 @@ class SkyMapOperations:
         SkyMapOperations._validate_map(map_data)
 
         if fwhm_rad <= 0:
+            msg = "fwhm_rad deve ser positivo"
             raise AnalysisError(
-                "fwhm_rad deve ser positivo"
+                msg
             )
 
         return np.asarray(
@@ -90,16 +95,18 @@ class SkyMapOperations:
         SkyMapOperations._validate_map(map_data)
 
         if len(rot) != 3:
+            msg = "rot deve conter (alpha, beta, gamma)"
             raise AnalysisError(
-                "rot deve conter (alpha, beta, gamma)"
+                msg
             )
 
         if not all(
             isinstance(angle, (int, float))
             for angle in rot
         ):
+            msg = "Todos os ângulos devem ser numéricos."
             raise AnalysisError(
-                "Todos os ângulos devem ser numéricos."
+                msg
             )
 
         nside = hp.get_nside(map_data)
@@ -133,8 +140,9 @@ class SkyMapOperations:
         SkyMapOperations._validate_map(map_data)
 
         if not isinstance(target_nside, NSide):
+            msg = "target_nside deve ser NSide"
             raise InvalidNSideError(
-                "target_nside deve ser NSide"
+                msg
             )
 
         downgraded = hp.ud_grade(

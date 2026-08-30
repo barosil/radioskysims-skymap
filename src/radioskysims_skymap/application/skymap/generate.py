@@ -26,8 +26,9 @@ class GenerateSkyMapUseCase:
 
     def __init__(self, generator: SkyMapGeneratorPort) -> None:
         if not isinstance(generator, SkyMapGeneratorPort):
+            msg = "generator deve implementar SkyMapGeneratorPort"
             raise TypeError(
-                "generator deve implementar SkyMapGeneratorPort"
+                msg
             )
 
         self._generator = generator
@@ -41,37 +42,43 @@ class GenerateSkyMapUseCase:
         """
 
         if input_dto is None:
-            raise ValueError("input_dto não pode ser None")
+            msg = "input_dto não pode ser None"
+            raise ValueError(msg)
 
         if not isinstance(input_dto, GenerateSkyMapInputDTO):
+            msg = "input_dto deve ser GenerateSkyMapInputDTO"
             raise TypeError(
-                "input_dto deve ser GenerateSkyMapInputDTO"
+                msg
             )
 
         if input_dto.frequency_ghz <= 0:
+            msg = "frequency_ghz deve ser positiva"
             raise ValueError(
-                "frequency_ghz deve ser positiva"
+                msg
             )
 
         if input_dto.nside <= 0:
+            msg = "nside deve ser positivo"
             raise ValueError(
-                "nside deve ser positivo"
+                msg
             )
 
         if (
             input_dto.components is None
             or len(input_dto.components) == 0
         ):
+            msg = "Deve haver ao menos um componente físico"
             raise ValueError(
-                "Deve haver ao menos um componente físico"
+                msg
             )
 
         if not all(
             isinstance(component, str)
             for component in input_dto.components
         ):
+            msg = "Todos os componentes devem ser strings"
             raise TypeError(
-                "Todos os componentes devem ser strings"
+                msg
             )
 
         nside = NSide(input_dto.nside)
@@ -83,8 +90,9 @@ class GenerateSkyMapUseCase:
         )
 
         if not isinstance(sky_map, SkyMap):
+            msg = "SkyMapGeneratorPort deve retornar SkyMap"
             raise TypeError(
-                "SkyMapGeneratorPort deve retornar SkyMap"
+                msg
             )
 
         return GenerateSkyMapOutputDTO(
@@ -106,8 +114,9 @@ class ContinuumSurveyMapUseCase:
         provider: ContinuumSurveyMapPort,
     ) -> None:
         if not isinstance(provider, ContinuumSurveyMapPort):
+            msg = "provider deve implementar ContinuumSurveyMapPort"
             raise TypeError(
-                "provider deve implementar ContinuumSurveyMapPort"
+                msg
             )
 
         self._provider = provider
@@ -128,38 +137,45 @@ class ContinuumSurveyMapUseCase:
         """
 
         if not survey_id.strip():
+            msg = "survey_id não pode ser vazio"
             raise ValueError(
-                "survey_id não pode ser vazio"
+                msg
             )
 
         if not (0.0 <= ra_deg < 360.0):
+            msg = "ra_deg deve estar entre 0 e 360 graus"
             raise ValueError(
-                "ra_deg deve estar entre 0 e 360 graus"
+                msg
             )
 
         if not (-90.0 <= dec_deg <= 90.0):
+            msg = "dec_deg deve estar entre -90 e 90 graus"
             raise ValueError(
-                "dec_deg deve estar entre -90 e 90 graus"
+                msg
             )
 
         if fov_deg <= 0:
+            msg = "fov_deg deve ser positivo"
             raise ValueError(
-                "fov_deg deve ser positivo"
+                msg
             )
 
         if nside <= 0:
+            msg = "nside deve ser positivo"
             raise ValueError(
-                "nside deve ser positivo"
+                msg
             )
 
         if freq_ghz is not None and freq_ghz <= 0:
+            msg = "freq_ghz deve ser positiva"
             raise ValueError(
-                "freq_ghz deve ser positiva"
+                msg
             )
 
         if field not in {"I", "Q", "U"}:
+            msg = "field deve ser 'I', 'Q' ou 'U'"
             raise ValueError(
-                "field deve ser 'I', 'Q' ou 'U'"
+                msg
             )
 
         nside_vo = NSide(nside)
@@ -175,8 +191,9 @@ class ContinuumSurveyMapUseCase:
         )
 
         if not isinstance(skymap, SkyMap):
+            msg = "ContinuumSurveyMapPort deve retornar SkyMap"
             raise TypeError(
-                "ContinuumSurveyMapPort deve retornar SkyMap"
+                msg
             )
 
         return skymap

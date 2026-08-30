@@ -1,6 +1,6 @@
-from __future__ import annotations
-
 """Provider para geração de SkyMap usando PySM3."""
+
+from __future__ import annotations
 
 from typing import Final
 
@@ -72,7 +72,8 @@ class PySMSkyMapGeneratorAdapter(SkyMapGeneratorPort):
             try:
                 presets.append(_COMPONENT_PRESET_MAP[comp])
             except KeyError:
-                raise ValueError(f"Unsupported PySM component: {comp}") from None
+                msg = f"Unsupported PySM component: {comp}"
+                raise ValueError(msg) from None
 
         sky = pysm3.Sky(
             nside=nside.value,

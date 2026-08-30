@@ -10,7 +10,7 @@ from __future__ import annotations
 import functools
 import inspect
 import logging
-from typing import Any, Callable, TypeVar, cast
+from typing import Any, Callable, TypeVar
 
 from .cache_impl import HybridCache, SkyMapCacheKeyGenerator
 
@@ -22,7 +22,7 @@ T = TypeVar("T")
 class CacheContext:
     """
     Contexto global de cache para SkyMap.
-    
+
     Gerencia instância singleton de cache híbrido,
     permitindo ativar/desativar cache globalmente.
     """
@@ -78,19 +78,19 @@ def cacheable(
 ) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
     """
     Decorador para cache transparente de funções.
-    
+
     Cria chave de cache a partir de parâmetros selecionados,
     armazena/recupera resultado automaticamente.
-    
+
     Uso:
         @cacheable(key_params=["freq_ghz", "nside", "components"])
         def generate_skymap(freq_ghz: float, nside: int, components: list) -> SkyMap:
             ...
-    
+
     Args:
         key_params: Lista de nomes de parâmetros a incluir na chave
         prefix: Prefixo para identificar tipo de cache (opcional)
-        
+
     Returns:
         Função decorada com cache transparente
     """
@@ -131,7 +131,8 @@ def cacheable(
                 # Tenta recuperar do cache
                 cached_value = cache.get(cache_key)
                 if cached_value is not None:
-                    logger.debug(f"Cache HIT: {func.__name__}")
+                    log_msg = f"Cache HIT: {func.__name__}"
+                    logger.debug(log_msg)
                     return cached_value
 
                 # Executa função
@@ -140,12 +141,14 @@ def cacheable(
                 # Armazena em cache
                 if isinstance(result, bytes):
                     cache.set(cache_key, result)
-                    logger.debug(f"Cache SET: {func.__name__}")
+                    log_msg = f"Cache SET: {func.__name__}"
+                    logger.debug(log_msg)
 
                 return result
 
             except Exception as e:
-                logger.warning(f"Cache error in {func.__name__}: {e}")
+                log_msg = f"Cache error in {func.__name__}: {e}"
+                logger.warning(log_msg)
                 # Executa sem cache em caso de erro
                 return func(*args, **kwargs)
 
@@ -157,22 +160,22 @@ def cacheable(
 class CachedFunction:
     """
     Wrapper de função com cache gerenciável.
-    
+
     Permite chamar função com/sem cache dinamicamente,
     sem precisar de decorador.
-    
+
     Uso:
         def load_skymap(file_path: str) -> SkyMap:
             ...
-        
+
         cached_load = CachedFunction(load_skymap, ["file_path"])
-        
+
         # Com cache
         result = cached_load.call_cached(file_path="data.fits")
-        
+
         # Sem cache
         result = cached_load.call_uncached(file_path="data.fits")
-        
+
         # Limpar específico
         cached_load.clear(file_path="data.fits")
     """
@@ -206,7 +209,7 @@ class CachedFunction:
             return self.func(*args, **kwargs)
 
         try:
-            key = self._make_key(**kwargs)
+            self._make_key(**kwargs)
             cache = CacheContext.get_cache()
 
             # Converte args para kwargs para chave de cache
@@ -230,7 +233,8 @@ class CachedFunction:
 
             return result
         except Exception as e:
-            logger.warning(f"Cache error: {e}")
+            log_msg = f"Cache error: {e}"
+            logger.warning(log_msg)
             return self.func(*args, **kwargs)
 
     def call_uncached(self, *args: Any, **kwargs: Any) -> Any:
@@ -248,5 +252,6 @@ class CachedFunction:
             cache = CacheContext.get_cache()
             return cache.delete(cache_key)
         except Exception as e:
-            logger.warning(f"Failed to clear cache: {e}")
+            log_msg = f"Failed to clear cache: {e}"
+            logger.warning(log_msg)
             return False

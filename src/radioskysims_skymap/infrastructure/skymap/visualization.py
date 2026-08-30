@@ -37,7 +37,8 @@ class SkyMapVisualizer:
         Plota um SkyMap em projeção Mollweide.
         """
         if not isinstance(skymap, SkyMap):
-            raise TypeError("skymap deve ser uma instância de SkyMap")
+            msg = "skymap deve ser uma instância de SkyMap"
+            raise TypeError(msg)
 
         hp.mollview(
             skymap.data,
@@ -68,7 +69,8 @@ class SkyMapVisualizer:
         Plota o espectro angular C_l.
         """
         if not isinstance(cls, np.ndarray):
-            raise TypeError("cls deve ser um numpy.ndarray")
+            msg = "cls deve ser um numpy.ndarray"
+            raise TypeError(msg)
 
         ell = np.arange(len(cls))
 
@@ -103,7 +105,8 @@ class SkyMapVisualizer:
         Salva um mapa do céu como imagem.
         """
         if not isinstance(skymap, SkyMap):
-            raise TypeError("skymap deve ser uma instância de SkyMap")
+            msg = "skymap deve ser uma instância de SkyMap"
+            raise TypeError(msg)
 
         hp.mollview(
             skymap.data,

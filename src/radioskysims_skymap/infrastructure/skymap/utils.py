@@ -24,13 +24,16 @@ def validate_healpix_map(data: np.ndarray, nside: NSide) -> None:
     Valida se o array é compatível com HEALPix 1D.
     """
     if not isinstance(data, np.ndarray):
-        raise TypeError("Map data must be a numpy array")
+        msg = "Map data must be a numpy array"
+        raise TypeError(msg)
 
     if data.ndim != 1:
-        raise ValueError("HEALPix map must be 1D")
+        msg = "HEALPix map must be 1D"
+        raise ValueError(msg)
 
     if data.size != expected_npix(nside):
-        raise ValueError("Data size does not match NSide")
+        msg = "Data size does not match NSide"
+        raise ValueError(msg)
 
 
 # --------------------------------------------------

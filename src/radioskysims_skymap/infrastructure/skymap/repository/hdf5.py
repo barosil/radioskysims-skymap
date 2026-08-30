@@ -68,12 +68,14 @@ class HDF5SkyMapRepository(SkyMapRepositoryPort):
         """
 
         if not isinstance(key, str):
-            raise TypeError("SkyMap repository key must be a string.")
+            msg = "SkyMap repository key must be a string."
+            raise TypeError(msg)
 
         normalized = key.strip()
 
         if not normalized:
-            raise ValueError("SkyMap repository key cannot be empty.")
+            msg = "SkyMap repository key cannot be empty."
+            raise ValueError(msg)
 
         if (
             "/" in normalized
@@ -81,7 +83,8 @@ class HDF5SkyMapRepository(SkyMapRepositoryPort):
             or normalized in {".", ".."}
             or ".." in normalized
         ):
-            raise ValueError("SkyMap repository key must not contain path separators or '..'.")
+            msg = "SkyMap repository key must not contain path separators or '..'."
+            raise ValueError(msg)
 
         return normalized
 
@@ -108,17 +111,20 @@ class HDF5SkyMapRepository(SkyMapRepositoryPort):
             skymap,
             SkyMap,
         ):
-            raise TypeError("skymap must be a SkyMap.")
+            msg = "skymap must be a SkyMap."
+            raise TypeError(msg)
 
         path = self._path_for_key(key)
 
         if path.exists() and not overwrite:
-            raise FileExistsError(f"SkyMap already exists: {path}")
+            msg = f"SkyMap already exists: {path}"
+            raise FileExistsError(msg)
 
         data = np.asarray(skymap.data)
 
         if data.ndim != 1:
-            raise ValueError("SkyMap HDF5 persistence requires a 1D HEALPix array.")
+            msg = "SkyMap HDF5 persistence requires a 1D HEALPix array."
+            raise ValueError(msg)
 
         # Grava em arquivo temporário e renomeia somente após
         # conclusão bem-sucedida. Isso reduz o risco de deixar
@@ -183,8 +189,9 @@ class HDF5SkyMapRepository(SkyMapRepositoryPort):
             "r",
         ) as handle:
             if self.DATASET_NAME not in handle:
+                msg = f"Invalid SkyMap HDF5 file: dataset {self.DATASET_NAME!r} not found."
                 raise ValueError(
-                    f"Invalid SkyMap HDF5 file: dataset {self.DATASET_NAME!r} not found."
+                    msg
                 )
 
             data = np.asarray(handle[self.DATASET_NAME][...])
@@ -199,8 +206,9 @@ class HDF5SkyMapRepository(SkyMapRepositoryPort):
             missing = required_attributes - set(handle.attrs.keys())
 
             if missing:
+                msg = f"Invalid SkyMap HDF5 file; missing attributes: {sorted(missing)}."
                 raise ValueError(
-                    f"Invalid SkyMap HDF5 file; missing attributes: {sorted(missing)}."
+                    msg
                 )
 
             nside = int(handle.attrs["nside"])

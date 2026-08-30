@@ -16,7 +16,7 @@ from collections import OrderedDict
 from pathlib import Path
 from typing import Any, Final
 
-from .cache_base import CacheBackend, CacheEntry, CacheKey, CacheKeyGenerator
+from .cache_base import CacheBackend, CacheKey, CacheKeyGenerator
 
 logger = logging.getLogger(__name__)
 
@@ -25,23 +25,24 @@ logger = logging.getLogger(__name__)
 # Key Generator
 # ============================================================================
 
+
 class SkyMapCacheKeyGenerator(CacheKeyGenerator):
     """
     Gera chaves determinísticas para SkyMap baseado em parâmetros.
-    
+
     Normaliza parâmetros e cria hash SHA256 determinístico.
     """
 
     def generate(self, **params: Any) -> CacheKey:
         """
         Gera chave a partir de parâmetros normalizados.
-        
+
         Exemplo:
             key = generator.generate(freq_ghz=30.0, nside=1, components=["synchrotron"])
-        
+
         Args:
             **params: Parâmetros para SkyMap (freq_ghz, nside, components, etc.)
-            
+
         Returns:
             CacheKey com hash determinístico
         """
@@ -64,12 +65,13 @@ class SkyMapCacheKeyGenerator(CacheKeyGenerator):
 # In-Memory Cache
 # ============================================================================
 
+
 class InMemoryCache(CacheBackend[bytes]):
     """
     Cache em memória RAM com limite de tamanho.
-    
+
     Implementa LRU (Least Recently Used) para evitar crescimento ilimitado.
-    
+
     Características:
     - Acesso O(1) em média
     - TTL não implementado (cache enquanto em memória)
@@ -79,7 +81,7 @@ class InMemoryCache(CacheBackend[bytes]):
     def __init__(self, max_size: int = 100):
         """
         Inicializa cache em memória.
-        
+
         Args:
             max_size: Número máximo de entradas antes de descartar (LRU)
         """
@@ -108,7 +110,8 @@ class InMemoryCache(CacheBackend[bytes]):
             # Remove entrada mais antiga (LRU)
             removed_key, _ = self._cache.popitem(last=False)
             self._metadata.pop(removed_key, None)
-            logger.debug(f"Cache LRU eviction: {removed_key[:8]}...")
+            log_msg = f"Cache LRU eviction: {removed_key[:8]}..."
+            logger.debug(log_msg)
 
         self._cache[key_str] = value
         self._metadata[key_str] = key.metadata
@@ -143,10 +146,11 @@ class InMemoryCache(CacheBackend[bytes]):
 # Disk Cache
 # ============================================================================
 
+
 class DiskCache(CacheBackend[bytes]):
     """
     Cache em filesystem para persistência de longo prazo.
-    
+
     Características:
     - Persistente entre sessões
     - Preparado para compressão/serialização futura
@@ -161,13 +165,14 @@ class DiskCache(CacheBackend[bytes]):
     def __init__(self, base_dir: Path | str = ".cache/skymap"):
         """
         Inicializa cache em disco.
-        
+
         Args:
             base_dir: Diretório base para armazenar cache
         """
         self._base_dir = Path(base_dir)
         self._base_dir.mkdir(parents=True, exist_ok=True)
-        logger.info(f"Disk cache initialized at {self._base_dir}")
+        log_msg = f"Disk cache initialized at {self._base_dir}"
+        logger.info(log_msg)
 
     def _data_path(self, key: CacheKey) -> Path:
         """Caminho para arquivo de dados."""
@@ -186,7 +191,8 @@ class DiskCache(CacheBackend[bytes]):
         try:
             return path.read_bytes()
         except OSError as e:
-            logger.warning(f"Failed to read cache {key.key_hash[:8]}...: {e}")
+            log_msg = f"Failed to read cache {key.key_hash[:8]}...: {e}"
+            logger.warning(log_msg)
             return None
 
     def set(self, key: CacheKey, value: bytes) -> None:
@@ -207,9 +213,11 @@ class DiskCache(CacheBackend[bytes]):
             )
             meta_path.write_text(meta_json)
 
-            logger.debug(f"Cached {key.key_hash[:8]}... ({len(value)} bytes)")
+            log_msg = f"Cached {key.key_hash[:8]}... ({len(value)} bytes)"
+            logger.debug(log_msg)
         except OSError as e:
-            logger.error(f"Failed to write cache {key.key_hash[:8]}...: {e}")
+            log_msg = f"Failed to write cache {key.key_hash[:8]}...: {e}"
+            logger.error(log_msg)
 
     def exists(self, key: CacheKey) -> bool:
         return self._data_path(key).exists()
@@ -226,7 +234,8 @@ class DiskCache(CacheBackend[bytes]):
                     path.unlink()
                     deleted = True
                 except OSError as e:
-                    logger.warning(f"Failed to delete {path}: {e}")
+                    log_msg = f"Failed to delete {path}: {e}"
+                    logger.warning(log_msg)
 
         return deleted
 
@@ -239,7 +248,8 @@ class DiskCache(CacheBackend[bytes]):
             self._base_dir.mkdir(parents=True, exist_ok=True)
             logger.info("Disk cache cleared")
         except OSError as e:
-            logger.error(f"Failed to clear cache: {e}")
+            log_msg = f"Failed to clear cache: {e}"
+            logger.error(log_msg)
 
     def size(self) -> int:
         """Retorna número de entradas em disco."""
@@ -255,16 +265,17 @@ class DiskCache(CacheBackend[bytes]):
 # Hybrid Cache
 # ============================================================================
 
+
 class HybridCache(CacheBackend[bytes]):
     """
     Cache híbrido que combina memória + disco com fallback inteligente.
-    
+
     Estratégia:
     1. Busca em cache de memória (rápido)
     2. Se não encontrar, busca em disco
     3. Se encontrar em disco, carrega em memória
     4. Ao salvar, escreve em ambos os níveis
-    
+
     Benefícios:
     - Performance de memória para acessos repetidos
     - Persistência de disco entre sessões
@@ -278,7 +289,7 @@ class HybridCache(CacheBackend[bytes]):
     ):
         """
         Inicializa cache híbrido.
-        
+
         Args:
             memory_max_size: Tamanho máximo de cache em memória
             disk_dir: Diretório para cache em disco
@@ -290,24 +301,27 @@ class HybridCache(CacheBackend[bytes]):
     def get(self, key: CacheKey) -> bytes | None:
         """
         Busca com fallback: memória → disco.
-        
+
         Se encontrar em disco, carrega em memória.
         """
         # Tenta memória primeiro
         value = self._memory.get(key)
         if value is not None:
-            logger.debug(f"Cache HIT (memory): {key.key_hash[:8]}...")
+            log_msg = f"Cache HIT (memory): {key.key_hash[:8]}..."
+            logger.debug(log_msg)
             return value
 
         # Fallback para disco
         value = self._disk.get(key)
         if value is not None:
-            logger.debug(f"Cache HIT (disk): {key.key_hash[:8]}...")
+            log_msg = f"Cache HIT (disk): {key.key_hash[:8]}..."
+            logger.debug(log_msg)
             # Carrega em memória para próximos acessos
             self._memory.set(key, value)
             return value
 
-        logger.debug(f"Cache MISS: {key.key_hash[:8]}...")
+        log_msg = f"Cache MISS: {key.key_hash[:8]}..."
+        logger.debug(log_msg)
         return None
 
     def set(self, key: CacheKey, value: bytes) -> None:
@@ -332,8 +346,12 @@ class HybridCache(CacheBackend[bytes]):
 
     def size(self) -> int:
         """Retorna número total de entradas (deduplica memória/disco)."""
-        return len(set(list(self._memory._cache.keys()) + 
-                      [p.stem for p in Path(self._disk._base_dir).glob(f"*.{self._disk._DATA_SUFFIX}")]))
+        return len(
+            set(
+                list(self._memory._cache.keys())
+                + [p.stem for p in Path(self._disk._base_dir).glob(f"*.{self._disk._DATA_SUFFIX}")]
+            )
+        )
 
     def stats(self) -> dict[str, Any]:
         """Retorna estatísticas de cache híbrido."""

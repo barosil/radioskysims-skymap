@@ -34,23 +34,27 @@ class SkyMapAnalysis:
         """
 
         if not isinstance(map_data, np.ndarray):
+            msg = "map_data deve ser numpy.ndarray"
             raise TypeError(
-                "map_data deve ser numpy.ndarray"
+                msg
             )
 
         if map_data.ndim != 1:
+            msg = "map_data deve ser unidimensional"
             raise ValueError(
-                "map_data deve ser unidimensional"
+                msg
             )
 
         if map_data.size == 0:
+            msg = "map_data não pode estar vazio"
             raise ValueError(
-                "map_data não pode estar vazio"
+                msg
             )
 
         if not np.all(np.isfinite(map_data)):
+            msg = "map_data contém valores não finitos"
             raise ValueError(
-                "map_data contém valores não finitos"
+                msg
             )
 
     @staticmethod
@@ -62,8 +66,9 @@ class SkyMapAnalysis:
         try:
             return importlib.import_module("healpy")
         except ImportError as exc:
+            msg = "healpy é necessário para calcular o espectro angular."
             raise ImportError(
-                "healpy é necessário para calcular o espectro angular."
+                msg
             ) from exc
 
     # ------------------------------------------------------------------
@@ -145,13 +150,15 @@ class SkyMapAnalysis:
 
         if lmax is not None:
             if not isinstance(lmax, int):
+                msg = "lmax deve ser inteiro"
                 raise TypeError(
-                    "lmax deve ser inteiro"
+                    msg
                 )
 
             if lmax <= 0:
+                msg = "lmax deve ser positivo"
                 raise ValueError(
-                    "lmax deve ser positivo"
+                    msg
                 )
 
         hp = SkyMapAnalysis._healpy()

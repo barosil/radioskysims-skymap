@@ -14,16 +14,16 @@ logger = logging.getLogger(__name__)
 class CacheStore:
     """
     Cache simples baseado em filesystem (API básica e backwards-compatible).
-    
+
     Interface minimalista para operações de cache direto:
     - save(payload, suffix, data) → Path
     - load(payload, suffix) → Path
     - exists(payload, suffix) → bool
     - clear() → None
-    
+
     Para cache mais avançado (memória, híbrido, contexto global),
     use as implementações em cache_impl.py e decorador cacheable.
-    
+
     Exemplo:
         store = CacheStore(Path(".cache"))
         path = store.save({"freq": 30.0, "nside": 1}, "bin", data_bytes)
@@ -34,13 +34,14 @@ class CacheStore:
     def __init__(self, base_dir: Path | str = ".cache/skymap"):
         """
         Inicializa cache em filesystem.
-        
+
         Args:
             base_dir: Diretório base para armazenar cache
         """
         self._base_dir = Path(base_dir)
         self._base_dir.mkdir(parents=True, exist_ok=True)
-        logger.info(f"CacheStore initialized at {self._base_dir}")
+        log_msg = f"CacheStore initialized at {self._base_dir}"
+        logger.info(log_msg)
 
     # --------------------------------------------------
     # Chaves
@@ -48,12 +49,12 @@ class CacheStore:
     def _make_key(self, payload: dict[str, Any]) -> str:
         """
         Gera chave hash determinística a partir de um payload.
-        
+
         Usa JSON com sorted_keys para garantir ordem determinística.
-        
+
         Args:
             payload: Dicionário com parâmetros
-            
+
         Returns:
             Hash SHA256 hexadecimal
         """
@@ -70,11 +71,11 @@ class CacheStore:
     def exists(self, payload: dict[str, Any], suffix: str) -> bool:
         """
         Verifica se entrada está em cache.
-        
+
         Args:
             payload: Parâmetros (dicionário)
             suffix: Sufixo de arquivo (ex: "bin", "fits", "json")
-            
+
         Returns:
             True se arquivo existe, False caso contrário
         """
@@ -84,16 +85,16 @@ class CacheStore:
     def load(self, payload: dict[str, Any], suffix: str) -> Path:
         """
         Carrega caminho de arquivo em cache.
-        
+
         Retorna Path para arquivo existente, pode ser lido diretamente.
-        
+
         Args:
             payload: Parâmetros (dicionário)
             suffix: Sufixo de arquivo
-            
+
         Returns:
             Path existente para arquivo de cache
-            
+
         Raises:
             FileNotFoundError: Se cache não existe
         """
@@ -101,10 +102,13 @@ class CacheStore:
         path = self._path_for(key, suffix)
 
         if not path.exists():
-            logger.debug(f"Cache miss: {key[:8]}...")
-            raise FileNotFoundError(f"Cached file not found: {path}")
+            log_msg = f"Cache miss: {key[:8]}..."
+            logger.debug(log_msg)
+            msg = f"Cached file not found: {path}"
+            raise FileNotFoundError(msg)
 
-        logger.debug(f"Cache hit: {key[:8]}...")
+        log_msg = f"Cache hit: {key[:8]}..."
+        logger.debug(log_msg)
         return path
 
     def save(
@@ -115,12 +119,12 @@ class CacheStore:
     ) -> Path:
         """
         Salva dados em cache.
-        
+
         Args:
             payload: Parâmetros (dicionário) para gerar chave
             suffix: Sufixo de arquivo
             data: Dados em bytes
-            
+
         Returns:
             Path onde arquivo foi salvo
         """
@@ -129,16 +133,18 @@ class CacheStore:
 
         try:
             path.write_bytes(data)
-            logger.debug(f"Cache saved: {key[:8]}... ({len(data)} bytes)")
+            log_msg = f"Cache saved: {key[:8]}... ({len(data)} bytes)"
+            logger.debug(log_msg)
             return path
         except OSError as e:
-            logger.error(f"Failed to save cache: {e}")
+            log_msg = f"Failed to save cache: {e}"
+            logger.error(log_msg)
             raise
 
     def clear(self) -> None:
         """
         Remove todos os arquivos de cache.
-        
+
         Limpa diretório completamente.
         """
         import shutil
@@ -148,12 +154,13 @@ class CacheStore:
             self._base_dir.mkdir(parents=True, exist_ok=True)
             logger.info("Cache store cleared")
         except OSError as e:
-            logger.error(f"Failed to clear cache: {e}")
+            log_msg = f"Failed to clear cache: {e}"
+            logger.error(log_msg)
 
     def size(self) -> int:
         """
         Retorna número de arquivos em cache.
-        
+
         Returns:
             Contagem de arquivos no diretório de cache
         """
@@ -162,7 +169,7 @@ class CacheStore:
     def disk_usage_mb(self) -> float:
         """
         Retorna uso em disco aproximado.
-        
+
         Returns:
             Tamanho total em MB
         """
