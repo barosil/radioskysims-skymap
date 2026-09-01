@@ -17,5 +17,12 @@ __version__ = "0.1.0"
 
 from .domain.skymap import SkyMap
 from .domain.skymap.value_objects import NSide
+from .manager import SkyMapHandle, SkyMapManager, SkyMapStatistics
 
-__all__ = ["NSide", "SkyMap"]
+__all__ = [
+    "NSide",
+    "SkyMap",
+    "SkyMapHandle",
+    "SkyMapManager",
+    "SkyMapStatistics",
+]

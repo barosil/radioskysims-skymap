@@ -1,8 +1,6 @@
-
 from unittest.mock import ANY, patch
 
 import numpy as np
-
 from radioskysims_skymap.domain.skymap.operations import SkyMapOperations
 
 
@@ -33,13 +31,14 @@ def test_rotate_success(mock_hp) -> None:
 
     mock_hp.rotate_alm.assert_called_once_with(
         ANY,
-        rot=(0.0, 0.0, 0.0),
+        psi=0.0,
+        theta=0.0,
+        phi=0.0,
     )
 
     mock_hp.alm2map.assert_called_once_with(
         ANY,
         nside=1,
-        verbose=False,
     )
 
     rotated_alm = mock_hp.rotate_alm.call_args.args[0]
@@ -55,4 +54,3 @@ def test_rotate_success(mock_hp) -> None:
         result,
         expected,
     )
-

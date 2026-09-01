@@ -32,27 +32,19 @@ class SkyMapOperations:
 
         if not isinstance(map_data, np.ndarray):
             msg = "map_data deve ser numpy.ndarray"
-            raise AnalysisError(
-                msg
-            )
+            raise AnalysisError(msg)
 
         if map_data.ndim != 1:
             msg = "map_data deve ser unidimensional"
-            raise AnalysisError(
-                msg
-            )
+            raise AnalysisError(msg)
 
         if map_data.size == 0:
             msg = "map_data não pode estar vazio"
-            raise AnalysisError(
-                msg
-            )
+            raise AnalysisError(msg)
 
         if not np.all(np.isfinite(map_data)):
             msg = "map_data contém valores não finitos"
-            raise AnalysisError(
-                msg
-            )
+            raise AnalysisError(msg)
 
     # ------------------------------------------------------------------
     # Operações
@@ -71,9 +63,7 @@ class SkyMapOperations:
 
         if fwhm_rad <= 0:
             msg = "fwhm_rad deve ser positivo"
-            raise AnalysisError(
-                msg
-            )
+            raise AnalysisError(msg)
 
         return np.asarray(
             hp.smoothing(
@@ -96,34 +86,30 @@ class SkyMapOperations:
 
         if len(rot) != 3:
             msg = "rot deve conter (alpha, beta, gamma)"
-            raise AnalysisError(
-                msg
-            )
+            raise AnalysisError(msg)
 
-        if not all(
-            isinstance(angle, (int, float))
-            for angle in rot
-        ):
+        if not all(isinstance(angle, (int, float)) for angle in rot):
             msg = "Todos os ângulos devem ser numéricos."
-            raise AnalysisError(
-                msg
-            )
+            raise AnalysisError(msg)
 
         nside = hp.get_nside(map_data)
 
         alm = hp.map2alm(map_data)
         alm_rot = alm.copy()
 
+        psi, theta, phi = rot
+
         hp.rotate_alm(
             alm_rot,
-            rot=rot,
+            psi=psi,
+            theta=theta,
+            phi=phi,
         )
 
         return np.asarray(
             hp.alm2map(
                 alm_rot,
                 nside=nside,
-                verbose=False,
             ),
             dtype=np.float64,
         )
@@ -141,9 +127,7 @@ class SkyMapOperations:
 
         if not isinstance(target_nside, NSide):
             msg = "target_nside deve ser NSide"
-            raise InvalidNSideError(
-                msg
-            )
+            raise InvalidNSideError(msg)
 
         downgraded = hp.ud_grade(
             map_data,
