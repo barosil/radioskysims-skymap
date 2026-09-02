@@ -43,6 +43,20 @@ from radioskysims_skymap.application.skymap.ports import (
 from radioskysims_skymap.domain.skymap import NSide, SkyMap
 
 
+def _is_numeric_field(dtype) -> bool:
+    """True se o dtype (ou a base de um subarray) é numérico.
+
+    FITS de tabelas HEALPix escritos pelo healpy usam colunas com dtype de
+    subarray (ex.: ``('>f8', (npix,))``) — ``np.issubdtype`` direto retorna
+    False; usa a base escalar.
+    """
+    try:
+        base = np.dtype(dtype).base
+    except Exception:  # noqa: BLE001 - dtype mal formado
+        base = np.dtype(dtype)
+    return bool(np.issubdtype(base, np.number))
+
+
 class HiPSSkyMapProvider(ContinuumSurveyMapPort):
     """Adapter de HiPS/hips2fits para ``SkyMap``.
 
@@ -159,9 +173,16 @@ class HiPSSkyMapProvider(ContinuumSurveyMapPort):
             candidates = (
                 field,
                 f"{field}_STOKES",
+                # Nomes comuns de colunas HEALPix (healpy grava "T" por padrão)
+                "T",
+                "I",
+                "Q",
+                "U",
                 "TEMPERATURE",
                 "SIGNAL",
                 "SKYMAP",
+                "VALUE",
+                "MAP",
             )
 
             column_name = next(
@@ -177,9 +198,8 @@ class HiPSSkyMapProvider(ContinuumSurveyMapPort):
                 numeric_columns = [
                     name
                     for name in names
-                    if np.issubdtype(
-                        raw_data.dtype.fields[name][0],
-                        np.number,
+                    if _is_numeric_field(
+                        raw_data.dtype.fields[name][0]
                     )
                 ]
 
