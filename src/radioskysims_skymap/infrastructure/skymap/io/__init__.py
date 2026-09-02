@@ -63,4 +63,8 @@ __all__ = [
     "cacheable",
     "CacheContext",
     "CachedFunction",
+    # Download de surveys
+    "DownloadError",
+    "FileDownloader",
+    "PlanckSkyMapDownloader",
 ]
