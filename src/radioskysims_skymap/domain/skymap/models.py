@@ -47,13 +47,9 @@ class SkyMap:
         if not isinstance(dataset, SkyMapDataset):
             if not isinstance(dataset, np.ndarray):
                 msg = "dataset must be a numpy.ndarray or SkyMapDataset"
-                raise TypeError(
-                    msg
-                )
+                raise TypeError(msg)
 
-            dataset = SkyMapDataset(
-                np.asarray(dataset, dtype=np.float64)
-            )
+            dataset = SkyMapDataset(np.asarray(dataset, dtype=np.float64))
 
         self._validate(
             data=dataset,
@@ -90,15 +86,11 @@ class SkyMap:
 
         if data.ndim is not None and data.ndim != 1:
             msg = "SkyMap must be a 1D HEALPix map."
-            raise InvalidDatasetError(
-                msg
-            )
+            raise InvalidDatasetError(msg)
 
         if data.size == 0:
             msg = "SkyMap dataset cannot be empty."
-            raise InvalidDatasetError(
-                msg
-            )
+            raise InvalidDatasetError(msg)
 
         if data.size is not None:
             expected = hp.nside2npix(nside.value)
@@ -108,27 +100,19 @@ class SkyMap:
                     "Data size is inconsistent with NSide: "
                     f"expected {expected} pixels, received {data.size}."
                 )
-                raise InvalidDatasetError(
-                    msg
-                )
+                raise InvalidDatasetError(msg)
 
         if not isinstance(unit, str):
             msg = "unit must be a string"
-            raise TypeError(
-                msg
-            )
+            raise TypeError(msg)
 
         if not unit.strip():
             msg = "Unit cannot be empty."
-            raise InvalidDatasetError(
-                msg
-            )
+            raise InvalidDatasetError(msg)
 
         if not isinstance(frame, str):
             msg = "frame must be a string"
-            raise TypeError(
-                msg
-            )
+            raise TypeError(msg)
 
         if frame not in {
             "galactic",
@@ -136,15 +120,11 @@ class SkyMap:
             "ecliptic",
         }:
             msg = f"Invalid frame '{frame}'."
-            raise InvalidDatasetError(
-                msg
-            )
+            raise InvalidDatasetError(msg)
 
         if not isinstance(field, str):
             msg = "field must be a string"
-            raise TypeError(
-                msg
-            )
+            raise TypeError(msg)
 
         if field not in {
             "I",
@@ -152,9 +132,7 @@ class SkyMap:
             "U",
         }:
             msg = "Field must be I, Q or U."
-            raise InvalidDatasetError(
-                msg
-            )
+            raise InvalidDatasetError(msg)
 
     # ------------------------------------------------------------------
     # Propriedades
@@ -273,17 +251,13 @@ class SkyMap:
 
         if not isinstance(mask, np.ndarray):
             msg = "Mask must be numpy.ndarray."
-            raise TypeError(
-                msg
-            )
+            raise TypeError(msg)
 
         data = self.data
 
         if mask.shape != data.shape:
             msg = "Mask shape mismatch."
-            raise ValueError(
-                msg
-            )
+            raise ValueError(msg)
 
         masked_data = np.multiply(
             data,

@@ -48,27 +48,19 @@ class NSide:
     def _validate(value: int) -> None:
         if not isinstance(value, int):
             msg = "NSide deve ser um inteiro"
-            raise InvalidNSideError(
-                msg
-            )
+            raise InvalidNSideError(msg)
 
         if value < 1:
             msg = "NSide deve ser >= 1"
-            raise InvalidNSideError(
-                msg
-            )
+            raise InvalidNSideError(msg)
 
         if not hp.isnsideok(value, nest=True):
             msg = "NSide deve ser potência de 2 (healpy)"
-            raise InvalidNSideError(
-                msg
-            )
+            raise InvalidNSideError(msg)
 
         if value > 8192:
             msg = "NSide acima do limite prático (8192)"
-            raise InvalidNSideError(
-                msg
-            )
+            raise InvalidNSideError(msg)
 
     @property
     def value(self) -> int:
@@ -79,10 +71,7 @@ class NSide:
         return hp.nside2npix(self._value)
 
     def __eq__(self, other: object) -> bool:
-        return (
-            isinstance(other, NSide)
-            and self._value == other._value
-        )
+        return isinstance(other, NSide) and self._value == other._value
 
     def __hash__(self) -> int:
         return hash(self._value)
@@ -226,33 +215,17 @@ class SkyMapDataset:
     def _validate(dataset: Any) -> None:
         is_numpy = isinstance(dataset, np.ndarray)
 
-        is_xarray = (
-            xr is not None
-            and isinstance(dataset, xr.DataArray)
-        )
+        is_xarray = xr is not None and isinstance(dataset, xr.DataArray)
 
-        is_dask_array = (
-            da is not None
-            and isinstance(dataset, da.Array)
-        )
+        is_dask_array = da is not None and isinstance(dataset, da.Array)
 
-        is_dask_delayed = (
-            Delayed is not None
-            and isinstance(dataset, Delayed)
-        )
+        is_dask_delayed = Delayed is not None and isinstance(dataset, Delayed)
 
-        if not (
-            is_numpy
-            or is_xarray
-            or is_dask_array
-            or is_dask_delayed
-        ):
+        if not (is_numpy or is_xarray or is_dask_array or is_dask_delayed):
             msg = (
                 "Dataset deve ser numpy.ndarray, "
                 "xarray.DataArray, "
                 "dask.array.Array ou "
                 "dask.delayed.Delayed."
             )
-            raise TypeError(
-                msg
-            )
+            raise TypeError(msg)

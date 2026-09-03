@@ -22,9 +22,7 @@ class AnalyzeSkyMapUseCase:
     def __init__(self, analyzer: SkyMapAnalyzerPort):
         if not isinstance(analyzer, SkyMapAnalyzerPort):
             msg = "analyzer deve implementar SkyMapAnalyzerPort"
-            raise TypeError(
-                msg
-            )
+            raise TypeError(msg)
 
         self._analyzer = analyzer
 
@@ -32,16 +30,13 @@ class AnalyzeSkyMapUseCase:
         self,
         input_dto: AnalyzeSkyMapInputDTO,
     ) -> AnalyzeSkyMapOutputDTO:
-
         if input_dto is None:
             msg = "input_dto não pode ser None"
             raise ValueError(msg)
 
         if not isinstance(input_dto, AnalyzeSkyMapInputDTO):
             msg = "input_dto deve ser AnalyzeSkyMapInputDTO"
-            raise TypeError(
-                msg
-            )
+            raise TypeError(msg)
 
         sky_map = input_dto.sky_map
         lmax = input_dto.lmax
@@ -52,9 +47,7 @@ class AnalyzeSkyMapUseCase:
 
         if not isinstance(sky_map, SkyMap):
             msg = "sky_map deve ser uma instância de SkyMap"
-            raise TypeError(
-                msg
-            )
+            raise TypeError(msg)
 
         if lmax is not None and lmax <= 0:
             msg = "lmax deve ser positivo"
@@ -67,9 +60,7 @@ class AnalyzeSkyMapUseCase:
 
         if not isinstance(cls, np.ndarray):
             msg = "SkyMapAnalyzerPort deve retornar numpy.ndarray"
-            raise TypeError(
-                msg
-            )
+            raise TypeError(msg)
 
         return AnalyzeSkyMapOutputDTO(
             nside=sky_map.nside_value,

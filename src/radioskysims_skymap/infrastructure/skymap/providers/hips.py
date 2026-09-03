@@ -88,11 +88,7 @@ class HiPSSkyMapProvider(ContinuumSurveyMapPort):
             é resolvido inicialmente como ``<base_path>/<survey_id>.fits``.
         """
 
-        self._base_path = (
-            Path(base_path)
-            if base_path is not None
-            else None
-        )
+        self._base_path = Path(base_path) if base_path is not None else None
 
     def _resolve_local_fits(
         self,
@@ -101,24 +97,14 @@ class HiPSSkyMapProvider(ContinuumSurveyMapPort):
         """Resolve um identificador de survey para um FITS local."""
 
         if self._base_path is None:
-            msg = (
-                "HiPSSkyMapProvider requer base_path para "
-                "resolver arquivos locais."
-            )
-            raise ValueError(
-                msg
-            )
+            msg = "HiPSSkyMapProvider requer base_path para resolver arquivos locais."
+            raise ValueError(msg)
 
         path = self._base_path / f"{survey_id}.fits"
 
         if not path.is_file():
-            msg = (
-                "Arquivo FITS não encontrado para "
-                f"survey_id={survey_id!r}: {path}"
-            )
-            raise FileNotFoundError(
-                msg
-            )
+            msg = f"Arquivo FITS não encontrado para survey_id={survey_id!r}: {path}"
+            raise FileNotFoundError(msg)
 
         return path
 
@@ -133,10 +119,7 @@ class HiPSSkyMapProvider(ContinuumSurveyMapPort):
         """
 
         for hdu in hdul:
-            if (
-                hdu.data is not None
-                and "NSIDE" in hdu.header
-            ):
+            if hdu.data is not None and "NSIDE" in hdu.header:
                 return hdu
 
         for hdu in hdul:
@@ -144,9 +127,7 @@ class HiPSSkyMapProvider(ContinuumSurveyMapPort):
                 return hdu
 
         msg = "O arquivo FITS não contém nenhuma HDU com dados."
-        raise ValueError(
-            msg
-        )
+        raise ValueError(msg)
 
     @staticmethod
     def _extract_healpix_vector(
@@ -165,10 +146,7 @@ class HiPSSkyMapProvider(ContinuumSurveyMapPort):
         if raw_data.dtype.names:
             names = raw_data.dtype.names
 
-            names_by_upper = {
-                name.upper(): name
-                for name in names
-            }
+            names_by_upper = {name.upper(): name for name in names}
 
             candidates = (
                 field,
@@ -196,21 +174,12 @@ class HiPSSkyMapProvider(ContinuumSurveyMapPort):
 
             if column_name is None:
                 numeric_columns = [
-                    name
-                    for name in names
-                    if _is_numeric_field(
-                        raw_data.dtype.fields[name][0]
-                    )
+                    name for name in names if _is_numeric_field(raw_data.dtype.fields[name][0])
                 ]
 
                 if not numeric_columns:
-                    msg = (
-                        "A tabela FITS HEALPix não possui "
-                        "colunas numéricas."
-                    )
-                    raise ValueError(
-                        msg
-                    )
+                    msg = "A tabela FITS HEALPix não possui colunas numéricas."
+                    raise ValueError(msg)
 
                 column_name = numeric_columns[0]
 
@@ -223,9 +192,7 @@ class HiPSSkyMapProvider(ContinuumSurveyMapPort):
 
         if vector.size == 0:
             msg = "O FITS HEALPix contém um dataset vazio."
-            raise ValueError(
-                msg
-            )
+            raise ValueError(msg)
 
         return vector
 
@@ -235,12 +202,16 @@ class HiPSSkyMapProvider(ContinuumSurveyMapPort):
     ) -> str:
         """Infere o referencial de um mapa HEALPix pelo cabeçalho."""
 
-        coord_system = str(
-            header.get(
-                "COORDSYS",
-                header.get("COORDTYPE", "G"),
+        coord_system = (
+            str(
+                header.get(
+                    "COORDSYS",
+                    header.get("COORDTYPE", "G"),
+                )
             )
-        ).strip().upper()
+            .strip()
+            .upper()
+        )
 
         if coord_system.startswith("C"):
             return "equatorial"
@@ -262,16 +233,12 @@ class HiPSSkyMapProvider(ContinuumSurveyMapPort):
 
         source_nside = int(header["NSIDE"])
 
-        healpix_data = (
-            HiPSSkyMapProvider._extract_healpix_vector(
-                data,
-                field=field,
-            )
+        healpix_data = HiPSSkyMapProvider._extract_healpix_vector(
+            data,
+            field=field,
         )
 
-        expected_source_npix = hp.nside2npix(
-            source_nside
-        )
+        expected_source_npix = hp.nside2npix(source_nside)
 
         if healpix_data.size != expected_source_npix:
             msg = (
@@ -279,19 +246,11 @@ class HiPSSkyMapProvider(ContinuumSurveyMapPort):
                 f"do FITS: esperado={expected_source_npix}, "
                 f"recebido={healpix_data.size}."
             )
-            raise ValueError(
-                msg
-            )
+            raise ValueError(msg)
 
-        ordering = str(
-            header.get("ORDERING", "RING")
-        ).strip().upper()
+        ordering = str(header.get("ORDERING", "RING")).strip().upper()
 
-        order_in = (
-            "NESTED"
-            if ordering.startswith("NEST")
-            else "RING"
-        )
+        order_in = "NESTED" if ordering.startswith("NEST") else "RING"
 
         if source_nside == target_nside.value:
             if order_in == "NESTED":
@@ -336,15 +295,11 @@ class HiPSSkyMapProvider(ContinuumSurveyMapPort):
                 "bidimensional; "
                 f"shape recebido: {image_data.shape}."
             )
-            raise ValueError(
-                msg
-            )
+            raise ValueError(msg)
 
         if not np.any(np.isfinite(image_data)):
             msg = "A imagem WCS não contém pixels finitos."
-            raise ValueError(
-                msg
-            )
+            raise ValueError(msg)
 
         skymap_data, footprint = reproject_to_healpix(
             (image_data, header),
@@ -371,24 +326,12 @@ class HiPSSkyMapProvider(ContinuumSurveyMapPort):
                 f"de pixels: esperado={expected_npix}, "
                 f"recebido={skymap_data.size}."
             )
-            raise ValueError(
-                msg
-            )
+            raise ValueError(msg)
 
-        valid_pixels = (
-            np.isfinite(skymap_data)
-            & np.isfinite(footprint)
-            & (footprint > 0.0)
-        )
+        valid_pixels = np.isfinite(skymap_data) & np.isfinite(footprint) & (footprint > 0.0)
 
         if not np.any(valid_pixels):
-            resolution_deg = float(
-                np.degrees(
-                    hp.nside2resol(
-                        target_nside.value
-                    )
-                )
-            )
+            resolution_deg = float(np.degrees(hp.nside2resol(target_nside.value)))
 
             msg = (
                 "A reprojeção WCS para HEALPix não produziu "
@@ -398,9 +341,7 @@ class HiPSSkyMapProvider(ContinuumSurveyMapPort):
                 f"NSide={target_nside.value}, "
                 f"resolução aproximada={resolution_deg:.3f} graus."
             )
-            raise ValueError(
-                msg
-            )
+            raise ValueError(msg)
         # O SkyMap atual não carrega uma máscara ou footprint junto
         # ao dataset. Durante esta implementação inicial, regiões
         # externas ao recorte são preenchidas com zero.
@@ -457,9 +398,7 @@ class HiPSSkyMapProvider(ContinuumSurveyMapPort):
             fov_deg,
         )
 
-        fits_path = self._resolve_local_fits(
-            survey_id
-        )
+        fits_path = self._resolve_local_fits(survey_id)
 
         with fits.open(
             fits_path,
@@ -484,9 +423,7 @@ class HiPSSkyMapProvider(ContinuumSurveyMapPort):
                 field=field,
             )
 
-            frame = self._frame_from_header(
-                header
-            )
+            frame = self._frame_from_header(header)
         else:
             skymap_data = self._convert_wcs_image(
                 data=data,

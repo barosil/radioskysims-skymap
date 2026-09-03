@@ -16,7 +16,7 @@ T = TypeVar("T")
 class CacheKey:
     """
     Chave de cache com metadados.
-    
+
     Permite rastrear:
     - Hash do conteúdo
     - Metadados (freq, nside, etc.)
@@ -56,7 +56,7 @@ class CacheEntry(Generic[T]):
 class CacheBackend(ABC, Generic[T]):
     """
     Interface abstrata para implementações de cache.
-    
+
     Permite múltiplas estratégias:
     - InMemoryCache: cache em RAM
     - DiskCache: cache em filesystem
@@ -67,10 +67,10 @@ class CacheBackend(ABC, Generic[T]):
     def get(self, key: CacheKey) -> T | None:
         """
         Recupera valor do cache.
-        
+
         Args:
             key: Chave de cache
-            
+
         Returns:
             Valor em cache ou None se não encontrado
         """
@@ -80,7 +80,7 @@ class CacheBackend(ABC, Generic[T]):
     def set(self, key: CacheKey, value: T) -> None:
         """
         Armazena valor no cache.
-        
+
         Args:
             key: Chave de cache
             value: Valor a armazenar
@@ -91,10 +91,10 @@ class CacheBackend(ABC, Generic[T]):
     def exists(self, key: CacheKey) -> bool:
         """
         Verifica se chave existe no cache.
-        
+
         Args:
             key: Chave de cache
-            
+
         Returns:
             True se chave existe, False caso contrário
         """
@@ -104,10 +104,10 @@ class CacheBackend(ABC, Generic[T]):
     def delete(self, key: CacheKey) -> bool:
         """
         Remove chave do cache.
-        
+
         Args:
             key: Chave de cache
-            
+
         Returns:
             True se removido, False se não existia
         """
@@ -124,7 +124,7 @@ class CacheBackend(ABC, Generic[T]):
     def size(self) -> int:
         """
         Retorna número de itens em cache.
-        
+
         Returns:
             Número de entradas armazenadas
         """
@@ -134,7 +134,7 @@ class CacheBackend(ABC, Generic[T]):
 class CacheKeyGenerator(ABC):
     """
     Interface para gerar chaves de cache a partir de parâmetros.
-    
+
     Permite diferentes estratégias de hashing e normalização.
     """
 
@@ -142,10 +142,10 @@ class CacheKeyGenerator(ABC):
     def generate(self, **params: Any) -> CacheKey:
         """
         Gera chave de cache a partir de parâmetros.
-        
+
         Args:
             **params: Parâmetros para gerar chave
-            
+
         Returns:
             CacheKey gerada
         """

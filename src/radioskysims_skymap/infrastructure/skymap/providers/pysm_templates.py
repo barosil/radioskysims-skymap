@@ -103,8 +103,7 @@ class PySMTemplateManager:
     def is_available(self, components: list[str]) -> bool:
         """True se todos os templates dos componentes já estão locais."""
         return all(
-            (self.data_dir / filename).exists()
-            for filename in self.template_filenames(components)
+            (self.data_dir / filename).exists() for filename in self.template_filenames(components)
         )
 
     def download(
@@ -154,6 +153,4 @@ def download_pysm_templates(
     verbose: bool = True,
 ) -> list[Path]:
     """Conveniência: baixa templates PySM3 de componentes (cache local)."""
-    return PySMTemplateManager(data_dir=data_dir).download(
-        components, verbose=verbose
-    )
+    return PySMTemplateManager(data_dir=data_dir).download(components, verbose=verbose)

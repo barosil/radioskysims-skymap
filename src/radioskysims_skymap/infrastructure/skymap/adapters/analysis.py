@@ -13,7 +13,8 @@ _telemetry = Telemetry(__name__)
 class HealpySkyMapAnalyzer(SkyMapAnalyzerPort):
     """
     Adapter de análise espectral usando HEALPy.
-        """
+    """
+
     def compute_cls(
         self,
         skymap: SkyMap,

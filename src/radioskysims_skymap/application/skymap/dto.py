@@ -29,6 +29,7 @@ SkyComponent: TypeAlias = Literal[
 # Generate
 # ---------------------------------------------------------------------
 
+
 @dataclass(slots=True, frozen=True)
 class GenerateSkyMapInputDTO:
     """
@@ -54,6 +55,7 @@ class GenerateSkyMapOutputDTO:
 # ---------------------------------------------------------------------
 # Analyze
 # ---------------------------------------------------------------------
+
 
 @dataclass(slots=True, frozen=True)
 class AnalyzeSkyMapInputDTO:

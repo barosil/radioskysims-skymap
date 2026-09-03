@@ -35,27 +35,19 @@ class SkyMapAnalysis:
 
         if not isinstance(map_data, np.ndarray):
             msg = "map_data deve ser numpy.ndarray"
-            raise TypeError(
-                msg
-            )
+            raise TypeError(msg)
 
         if map_data.ndim != 1:
             msg = "map_data deve ser unidimensional"
-            raise ValueError(
-                msg
-            )
+            raise ValueError(msg)
 
         if map_data.size == 0:
             msg = "map_data não pode estar vazio"
-            raise ValueError(
-                msg
-            )
+            raise ValueError(msg)
 
         if not np.all(np.isfinite(map_data)):
             msg = "map_data contém valores não finitos"
-            raise ValueError(
-                msg
-            )
+            raise ValueError(msg)
 
     @staticmethod
     def _healpy() -> Any:
@@ -67,9 +59,7 @@ class SkyMapAnalysis:
             return importlib.import_module("healpy")
         except ImportError as exc:
             msg = "healpy é necessário para calcular o espectro angular."
-            raise ImportError(
-                msg
-            ) from exc
+            raise ImportError(msg) from exc
 
     # ------------------------------------------------------------------
     # Estatísticas básicas
@@ -97,13 +87,7 @@ class SkyMapAnalysis:
 
         SkyMapAnalysis._validate_map(map_data)
 
-        return float(
-            np.sqrt(
-                np.mean(
-                    np.square(map_data)
-                )
-            )
-        )
+        return float(np.sqrt(np.mean(np.square(map_data))))
 
     @staticmethod
     def min_max(
@@ -151,15 +135,11 @@ class SkyMapAnalysis:
         if lmax is not None:
             if not isinstance(lmax, int):
                 msg = "lmax deve ser inteiro"
-                raise TypeError(
-                    msg
-                )
+                raise TypeError(msg)
 
             if lmax <= 0:
                 msg = "lmax deve ser positivo"
-                raise ValueError(
-                    msg
-                )
+                raise ValueError(msg)
 
         hp = SkyMapAnalysis._healpy()
 

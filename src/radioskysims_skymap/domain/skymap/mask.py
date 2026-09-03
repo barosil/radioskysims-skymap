@@ -36,57 +36,39 @@ class SkyMask:
 
         if not isinstance(map_data, np.ndarray):
             msg = "map_data deve ser numpy.ndarray"
-            raise TypeError(
-                msg
-            )
+            raise TypeError(msg)
 
         if not isinstance(mask, np.ndarray):
             msg = "mask deve ser numpy.ndarray"
-            raise TypeError(
-                msg
-            )
+            raise TypeError(msg)
 
         if map_data.ndim != 1:
             msg = "map_data deve ser unidimensional"
-            raise ValueError(
-                msg
-            )
+            raise ValueError(msg)
 
         if mask.ndim != 1:
             msg = "mask deve ser unidimensional"
-            raise ValueError(
-                msg
-            )
+            raise ValueError(msg)
 
         if map_data.shape != mask.shape:
             msg = "map_data e mask devem possuir o mesmo shape"
-            raise ValueError(
-                msg
-            )
+            raise ValueError(msg)
 
         if map_data.size == 0:
             msg = "map_data não pode estar vazio"
-            raise ValueError(
-                msg
-            )
+            raise ValueError(msg)
 
         if mask.size == 0:
             msg = "mask não pode estar vazio"
-            raise ValueError(
-                msg
-            )
+            raise ValueError(msg)
 
         if not np.all(np.isfinite(map_data)):
             msg = "map_data contém valores não finitos"
-            raise ValueError(
-                msg
-            )
+            raise ValueError(msg)
 
         if not np.all(np.isfinite(mask)):
             msg = "mask contém valores não finitos"
-            raise ValueError(
-                msg
-            )
+            raise ValueError(msg)
 
     # ------------------------------------------------------------------
     # Operações

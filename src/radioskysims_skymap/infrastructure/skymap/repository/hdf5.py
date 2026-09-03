@@ -190,9 +190,7 @@ class HDF5SkyMapRepository(SkyMapRepositoryPort):
         ) as handle:
             if self.DATASET_NAME not in handle:
                 msg = f"Invalid SkyMap HDF5 file: dataset {self.DATASET_NAME!r} not found."
-                raise ValueError(
-                    msg
-                )
+                raise ValueError(msg)
 
             data = np.asarray(handle[self.DATASET_NAME][...])
 
@@ -207,9 +205,7 @@ class HDF5SkyMapRepository(SkyMapRepositoryPort):
 
             if missing:
                 msg = f"Invalid SkyMap HDF5 file; missing attributes: {sorted(missing)}."
-                raise ValueError(
-                    msg
-                )
+                raise ValueError(msg)
 
             nside = int(handle.attrs["nside"])
 

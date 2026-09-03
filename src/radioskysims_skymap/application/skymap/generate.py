@@ -27,9 +27,7 @@ class GenerateSkyMapUseCase:
     def __init__(self, generator: SkyMapGeneratorPort) -> None:
         if not isinstance(generator, SkyMapGeneratorPort):
             msg = "generator deve implementar SkyMapGeneratorPort"
-            raise TypeError(
-                msg
-            )
+            raise TypeError(msg)
 
         self._generator = generator
 
@@ -47,39 +45,23 @@ class GenerateSkyMapUseCase:
 
         if not isinstance(input_dto, GenerateSkyMapInputDTO):
             msg = "input_dto deve ser GenerateSkyMapInputDTO"
-            raise TypeError(
-                msg
-            )
+            raise TypeError(msg)
 
         if input_dto.frequency_ghz <= 0:
             msg = "frequency_ghz deve ser positiva"
-            raise ValueError(
-                msg
-            )
+            raise ValueError(msg)
 
         if input_dto.nside <= 0:
             msg = "nside deve ser positivo"
-            raise ValueError(
-                msg
-            )
+            raise ValueError(msg)
 
-        if (
-            input_dto.components is None
-            or len(input_dto.components) == 0
-        ):
+        if input_dto.components is None or len(input_dto.components) == 0:
             msg = "Deve haver ao menos um componente físico"
-            raise ValueError(
-                msg
-            )
+            raise ValueError(msg)
 
-        if not all(
-            isinstance(component, str)
-            for component in input_dto.components
-        ):
+        if not all(isinstance(component, str) for component in input_dto.components):
             msg = "Todos os componentes devem ser strings"
-            raise TypeError(
-                msg
-            )
+            raise TypeError(msg)
 
         nside = NSide(input_dto.nside)
 
@@ -91,9 +73,7 @@ class GenerateSkyMapUseCase:
 
         if not isinstance(sky_map, SkyMap):
             msg = "SkyMapGeneratorPort deve retornar SkyMap"
-            raise TypeError(
-                msg
-            )
+            raise TypeError(msg)
 
         return GenerateSkyMapOutputDTO(
             nside=sky_map.nside_value,
@@ -115,9 +95,7 @@ class ContinuumSurveyMapUseCase:
     ) -> None:
         if not isinstance(provider, ContinuumSurveyMapPort):
             msg = "provider deve implementar ContinuumSurveyMapPort"
-            raise TypeError(
-                msg
-            )
+            raise TypeError(msg)
 
         self._provider = provider
 
@@ -138,45 +116,31 @@ class ContinuumSurveyMapUseCase:
 
         if not survey_id.strip():
             msg = "survey_id não pode ser vazio"
-            raise ValueError(
-                msg
-            )
+            raise ValueError(msg)
 
         if not (0.0 <= ra_deg < 360.0):
             msg = "ra_deg deve estar entre 0 e 360 graus"
-            raise ValueError(
-                msg
-            )
+            raise ValueError(msg)
 
         if not (-90.0 <= dec_deg <= 90.0):
             msg = "dec_deg deve estar entre -90 e 90 graus"
-            raise ValueError(
-                msg
-            )
+            raise ValueError(msg)
 
         if fov_deg <= 0:
             msg = "fov_deg deve ser positivo"
-            raise ValueError(
-                msg
-            )
+            raise ValueError(msg)
 
         if nside <= 0:
             msg = "nside deve ser positivo"
-            raise ValueError(
-                msg
-            )
+            raise ValueError(msg)
 
         if freq_ghz is not None and freq_ghz <= 0:
             msg = "freq_ghz deve ser positiva"
-            raise ValueError(
-                msg
-            )
+            raise ValueError(msg)
 
         if field not in {"I", "Q", "U"}:
             msg = "field deve ser 'I', 'Q' ou 'U'"
-            raise ValueError(
-                msg
-            )
+            raise ValueError(msg)
 
         nside_vo = NSide(nside)
 
@@ -192,8 +156,6 @@ class ContinuumSurveyMapUseCase:
 
         if not isinstance(skymap, SkyMap):
             msg = "ContinuumSurveyMapPort deve retornar SkyMap"
-            raise TypeError(
-                msg
-            )
+            raise TypeError(msg)
 
         return skymap

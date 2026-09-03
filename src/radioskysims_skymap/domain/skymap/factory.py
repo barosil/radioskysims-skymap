@@ -79,23 +79,17 @@ class SkyMapFactory:
 
         if isinstance(nside, bool):
             msg = "nside deve ser NSide ou int (bool não é permitido)."
-            raise TypeError(
-                msg
-            )
+            raise TypeError(msg)
 
         if isinstance(nside, int):
             nside = NSide(nside)
         elif not isinstance(nside, NSide):
             msg = "nside deve ser uma instância de NSide ou int."
-            raise TypeError(
-                msg
-            )
+            raise TypeError(msg)
 
         if freq_ghz is not None and freq_ghz <= 0:
             msg = "freq_ghz deve ser positiva."
-            raise ValueError(
-                msg
-            )
+            raise ValueError(msg)
 
         logger.info(
             "skymap_create_start",
