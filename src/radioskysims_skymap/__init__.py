@@ -15,14 +15,22 @@ from __future__ import annotations
 
 __version__ = "0.1.0"
 
+from .application.orchestrators import SkyMapOrchestrator
 from .domain.skymap import SkyMap
+from .domain.skymap.mask import SkyMask
 from .domain.skymap.value_objects import NSide
 from .manager import SkyMapHandle, SkyMapManager, SkyMapStatistics
 
+# Alias público de UX para o serviço de máscara (Anexo A — Onda 3).
+Mask = SkyMask
+
 __all__ = [
+    "Mask",
     "NSide",
     "SkyMap",
     "SkyMapHandle",
     "SkyMapManager",
+    "SkyMapOrchestrator",
     "SkyMapStatistics",
+    "SkyMask",
 ]
