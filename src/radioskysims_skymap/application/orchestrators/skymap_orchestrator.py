@@ -148,6 +148,26 @@ class SkyMapOrchestrator:
         )
         return self
 
+    def load_registered(
+        self,
+        key: str,
+        *,
+        root: str | Path | None = None,
+    ) -> "SkyMapOrchestrator":
+        """Carrega um mapa persistido no repositório HDF5 por chave lógica."""
+
+        handle = self._manager.load_registered(
+            key,
+            root=root,
+        )
+
+        if handle is None:
+            msg = f"Mapa registrado não encontrado: {key!r}."
+            raise FileNotFoundError(msg)
+
+        self._handle = handle
+        return self
+
     def download(
         self,
         *,
@@ -196,6 +216,15 @@ class SkyMapOrchestrator:
         self._handle = self._require_handle().rotate(rot_deg, target_frame=target_frame)
         return self
 
+    def downgrade(
+        self,
+        target_nside: int,
+    ) -> "SkyMapOrchestrator":
+        """Reduz a resolução HEALPix do mapa ativo."""
+
+        self._handle = self._require_handle().downgrade(target_nside)
+        return self
+
     # ──────────────────────────────────────────────────────────
     # Persistência / visualização / análise
     # ──────────────────────────────────────────────────────────
@@ -231,6 +260,14 @@ class SkyMapOrchestrator:
     def statistics(self) -> Any:
         """Estatísticas (média/RMS/min/max) do mapa ativo."""
         return self._require_handle().compute_statistics()
+
+    def power_spectrum(
+        self,
+        lmax: int | None = None,
+    ) -> npt.NDArray[np.float64]:
+        """Calcula o espectro angular de potência Cℓ do mapa ativo."""
+
+        return self._require_handle().compute_power_spectrum(lmax=lmax)
 
     # ──────────────────────────────────────────────────────────
     # Integrações pendentes (documentadas)
