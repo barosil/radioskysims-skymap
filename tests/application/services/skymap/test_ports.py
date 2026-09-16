@@ -45,7 +45,7 @@ class DummyGenerator(SkyMapGeneratorPort):
         *,
         nside: NSide,
         freq_ghz: float,
-        components: Sequence[str] | None = None,
+        components: Sequence[str] | None = None,  # noqa: ARG002
     ) -> SkyMap:
         return SkyMap(
             dataset=np.zeros(hp.nside2npix(nside.value)),
@@ -56,12 +56,12 @@ class DummyGenerator(SkyMapGeneratorPort):
 
 
 class DummyAnalyzer(SkyMapAnalyzerPort):
-    def compute_cls(self, skymap: SkyMap) -> object:
+    def compute_cls(self, skymap: SkyMap) -> object:  # noqa: ARG002
         return {"cls": np.arange(5)}
 
 
 class DummyMask(SkyMapMaskPort):
-    def apply(self, skymap: SkyMap, mask: SkyMap) -> SkyMap:
+    def apply(self, skymap: SkyMap, mask: SkyMap) -> SkyMap:  # noqa: ARG002
         return skymap
 
 
@@ -69,10 +69,10 @@ class DummySurveyProvider(ContinuumSurveyMapPort):
     def fetch_cutout(
         self,
         *,
-        survey_id: str,
-        ra_deg: float,
-        dec_deg: float,
-        fov_deg: float,
+        survey_id: str,  # noqa: ARG002
+        ra_deg: float,  # noqa: ARG002
+        dec_deg: float,  # noqa: ARG002
+        fov_deg: float,  # noqa: ARG002
         nside: NSide,
         freq_ghz: float | None = None,
         field: str = "I",

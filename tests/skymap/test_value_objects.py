@@ -214,51 +214,6 @@ def test_xarray_with_dask_backend_to_numpy() -> None:
         original.astype(np.float64),
     )
 
-# ---------------------------------------------------------------------
-# SkyMapDataset — xarray com backend Dask
-# ---------------------------------------------------------------------
-
-
-def test_xarray_with_dask_backend_to_numpy() -> None:
-    """
-    DataArray com dados Dask deve ser computado e convertido
-    para numpy.ndarray float64.
-    """
-    xr = pytest.importorskip("xarray")
-    da = pytest.importorskip("dask.array")
-
-    original = np.array(
-        [1.0, 2.0, 3.0, 4.0],
-        dtype=np.float32,
-    )
-
-    lazy_data = da.from_array(
-        original,
-        chunks=2,
-    )
-
-    data_array = xr.DataArray(
-        lazy_data,
-        dims=("pixel",),
-    )
-
-    dataset = SkyMapDataset(data_array)
-
-    result = dataset.to_numpy()
-
-    assert isinstance(result, np.ndarray)
-    assert result.dtype == np.float64
-
-    assert dataset.dataset is data_array
-    assert dataset.shape == (4,)
-    assert dataset.ndim == 1
-    assert dataset.size == 4
-
-    np.testing.assert_array_equal(
-        result,
-        original.astype(np.float64),
-    )
-
     # ---------------------------------------------------------------------
 # SkyMapDataset — Dask Delayed
 # ---------------------------------------------------------------------

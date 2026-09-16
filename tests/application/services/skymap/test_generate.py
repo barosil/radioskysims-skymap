@@ -5,6 +5,7 @@ from __future__ import annotations
 import healpy as hp
 import numpy as np
 import pytest
+from radioskysims_skymap.domain.skymap.exceptions import InvalidNSideError
 
 from radioskysims_skymap.application.skymap.dto import GenerateSkyMapInputDTO
 from radioskysims_skymap.application.skymap.generate import (
@@ -72,15 +73,15 @@ class DummySurveyProvider(ContinuumSurveyMapPort):
 
         self.called = True
 
-        self.kwargs = dict(
-            survey_id=survey_id,
-            ra_deg=ra_deg,
-            dec_deg=dec_deg,
-            fov_deg=fov_deg,
-            nside=nside,
-            freq_ghz=freq_ghz,
-            field=field,
-        )
+        self.kwargs = {
+            "survey_id": survey_id,
+            "ra_deg": ra_deg,
+            "dec_deg": dec_deg,
+            "fov_deg": fov_deg,
+            "nside": nside,
+            "freq_ghz": freq_ghz,
+            "field": field,
+        }
 
         return SkyMap(
             dataset=np.zeros(hp.nside2npix(nside.value)),
@@ -197,7 +198,7 @@ def test_invalid_nside():
         components=("cmb",),
     )
 
-    with pytest.raises(Exception):
+    with pytest.raises(InvalidNSideError):
         usecase.execute(dto)
 
 
@@ -260,7 +261,7 @@ def test_continuum_invalid_nside():
 
     usecase = ContinuumSurveyMapUseCase(provider)
 
-    with pytest.raises(Exception):
+    with pytest.raises(InvalidNSideError):
         usecase.execute(
             survey_id="survey",
             ra_deg=0,
@@ -273,8 +274,9 @@ def test_continuum_invalid_nside():
 def test_generator_exception_is_propagated():
 
     class BrokenGenerator(DummyGenerator):
-        def generate(self, **kwargs):
-            raise RuntimeError("generator failed")
+        def generate(self, **_kwargs):
+            msg = "generator failed"
+            raise RuntimeError(msg)
 
     usecase = GenerateSkyMapUseCase(BrokenGenerator())
 
@@ -291,8 +293,9 @@ def test_generator_exception_is_propagated():
 def test_provider_exception_is_propagated():
 
     class BrokenProvider(ContinuumSurveyMapPort):
-        def fetch_cutout(self, **kwargs):
-            raise RuntimeError("provider failed")
+        def fetch_cutout(self, **_kwargs):
+            msg = "provider failed"
+            raise RuntimeError(msg)
 
     usecase = ContinuumSurveyMapUseCase(BrokenProvider())
 

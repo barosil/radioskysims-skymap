@@ -45,7 +45,7 @@ class TestTelemetryBasics:
             telemetry = Telemetry("test_module")
 
             with telemetry.measure("operation"):
-                result = 1 + 1
+                pass
 
             # Não deve ter registrado nada
             assert len(telemetry._timings) == 0
@@ -58,7 +58,8 @@ class TestTelemetryBasics:
 
         with pytest.raises(ValueError):
             with telemetry.measure("failing_operation"):
-                raise ValueError("Test error")
+                msg = "Test error"
+                raise ValueError(msg)
 
         assert len(telemetry._timings) == 1
         assert not telemetry._timings[0].success
