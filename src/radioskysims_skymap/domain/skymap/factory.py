@@ -5,9 +5,6 @@ import numpy.typing as npt
 
 from radioskysims_skymap.domain.skymap.models import SkyMap
 from radioskysims_skymap.domain.skymap.value_objects import NSide, SkyMapDataset
-from radioskysims_core.logging_config import get_logger
-
-logger = get_logger("radioskysims.skymap")
 
 
 class SkyMapFactory:
@@ -91,39 +88,13 @@ class SkyMapFactory:
             msg = "freq_ghz deve ser positiva."
             raise ValueError(msg)
 
-        logger.info(
-            "skymap_create_start",
-            nside=nside.value,
-            freq_ghz=freq_ghz,
+        skymap = SkyMap(
+            dataset=dataset,
+            nside=nside,
+            unit=unit or self._unit,
             frame=frame or self._frame,
+            freq_ghz=freq_ghz,
             field=field or self._field,
         )
 
-        try:
-            skymap = SkyMap(
-                dataset=dataset,
-                nside=nside,
-                unit=unit or self._unit,
-                frame=frame or self._frame,
-                freq_ghz=freq_ghz,
-                field=field or self._field,
-            )
-
-            logger.info(
-                "skymap_create_success",
-                nside=skymap.nside_value,
-                npix=skymap.npix,
-                unit=skymap.unit,
-                frame=skymap.frame,
-                field=skymap.field,
-            )
-
-            return skymap
-
-        except Exception:
-            logger.exception(
-                "skymap_create_failed",
-                nside=nside.value,
-                freq_ghz=freq_ghz,
-            )
-            raise
+        return skymap

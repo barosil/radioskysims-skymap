@@ -1,4 +1,3 @@
-
 # tests/skymap/test_generate_usecase.py
 
 from __future__ import annotations

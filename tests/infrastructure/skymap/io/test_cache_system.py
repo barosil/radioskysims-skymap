@@ -33,6 +33,7 @@ from radioskysims_skymap.infrastructure.skymap.io.cache_context import (
 # Fixtures
 # ============================================================================
 
+
 @pytest.fixture
 def sample_data() -> bytes:
     """Dados de amostra para testes."""
@@ -55,6 +56,7 @@ def temp_cache_dir() -> Path:
 # ============================================================================
 # Cache Básico (CacheStore)
 # ============================================================================
+
 
 class TestCacheStore:
     """Testes para CacheStore (API básica)."""
@@ -105,6 +107,7 @@ class TestCacheStore:
 # ============================================================================
 # Cache em Memória
 # ============================================================================
+
 
 class TestInMemoryCache:
     """Testes para cache em memória."""
@@ -171,10 +174,13 @@ class TestInMemoryCache:
 # Cache em Disco
 # ============================================================================
 
+
 class TestDiskCache:
     """Testes para cache em disco."""
 
-    def test_disk_cache_get_set(self, temp_cache_dir: Path, key_generator: SkyMapCacheKeyGenerator, sample_data: bytes):
+    def test_disk_cache_get_set(
+        self, temp_cache_dir: Path, key_generator: SkyMapCacheKeyGenerator, sample_data: bytes
+    ):
         """Testa armazenamento em disco."""
         cache = DiskCache(temp_cache_dir)
         key = key_generator.generate(freq_ghz=30.0, nside=1)
@@ -185,7 +191,9 @@ class TestDiskCache:
         retrieved = cache.get(key)
         assert retrieved == sample_data
 
-    def test_disk_cache_metadata(self, temp_cache_dir: Path, key_generator: SkyMapCacheKeyGenerator):
+    def test_disk_cache_metadata(
+        self, temp_cache_dir: Path, key_generator: SkyMapCacheKeyGenerator
+    ):
         """Testa armazenamento de metadados."""
         cache = DiskCache(temp_cache_dir)
         key = key_generator.generate(freq_ghz=30.0, nside=1, components=["synchrotron"])
@@ -196,7 +204,9 @@ class TestDiskCache:
         meta_files = list(temp_cache_dir.glob("*.json"))
         assert len(meta_files) > 0
 
-    def test_disk_cache_persistence(self, temp_cache_dir: Path, key_generator: SkyMapCacheKeyGenerator, sample_data: bytes):
+    def test_disk_cache_persistence(
+        self, temp_cache_dir: Path, key_generator: SkyMapCacheKeyGenerator, sample_data: bytes
+    ):
         """Testa persistência entre instâncias."""
         key = key_generator.generate(freq_ghz=30.0)
 
@@ -223,10 +233,13 @@ class TestDiskCache:
 # Cache Híbrido
 # ============================================================================
 
+
 class TestHybridCache:
     """Testes para cache híbrido (memória + disco)."""
 
-    def test_hybrid_cache_memory_first(self, temp_cache_dir: Path, key_generator: SkyMapCacheKeyGenerator, sample_data: bytes):
+    def test_hybrid_cache_memory_first(
+        self, temp_cache_dir: Path, key_generator: SkyMapCacheKeyGenerator, sample_data: bytes
+    ):
         """Testa que memória é consultada primeiro."""
         cache = HybridCache(disk_dir=temp_cache_dir)
         key = key_generator.generate(freq_ghz=30.0)
@@ -238,7 +251,9 @@ class TestHybridCache:
         assert retrieved == sample_data
         assert cache._memory.exists(key)
 
-    def test_hybrid_cache_disk_fallback(self, temp_cache_dir: Path, key_generator: SkyMapCacheKeyGenerator, sample_data: bytes):
+    def test_hybrid_cache_disk_fallback(
+        self, temp_cache_dir: Path, key_generator: SkyMapCacheKeyGenerator, sample_data: bytes
+    ):
         """Testa fallback para disco."""
         cache = HybridCache(disk_dir=temp_cache_dir)
         key = key_generator.generate(freq_ghz=30.0)
@@ -273,6 +288,7 @@ class TestHybridCache:
 # ============================================================================
 # Cache Transparente (Decorador)
 # ============================================================================
+
 
 class TestCacheableDecorator:
     """Testes para decorador @cacheable."""
@@ -392,6 +408,7 @@ class TestCachedFunction:
 
     def test_cached_function_clear(self):
         """Testa limpeza de entrada específica."""
+
         def my_function(x: int) -> bytes:
             return f"result_{x}".encode()
 

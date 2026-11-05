@@ -12,7 +12,6 @@ from radioskysims_skymap.domain.skymap.value_objects import NSide, SkyMapDataset
 from radioskysims_skymap.domain.skymap.exceptions import InvalidDatasetError
 
 
-
 # ---------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------
@@ -28,6 +27,7 @@ def make_map() -> np.ndarray:
 # ---------------------------------------------------------------------
 # Construção da entidade
 # ---------------------------------------------------------------------
+
 
 def test_create_skymap_from_numpy_array() -> None:
     """
@@ -115,11 +115,12 @@ def test_create_from_alm_factory_method() -> None:
         skymap.data.shape,
         data.shape,
     )
-    
-    
+
+
 # ---------------------------------------------------------------------
 # Validações
 # ---------------------------------------------------------------------
+
 
 def test_invalid_dataset_type() -> None:
     """
@@ -218,11 +219,12 @@ def test_empty_dataset() -> None:
             nside=NSIDE,
             unit="K",
         )
-        
-        
+
+
 # ---------------------------------------------------------------------
 # Propriedades
 # ---------------------------------------------------------------------
+
 
 def test_data_property_returns_numpy_array() -> None:
     """
@@ -306,11 +308,12 @@ def test_npix_property() -> None:
 
     assert skymap.npix == hp.nside2npix(NSIDE.value)
     assert skymap.npix == NSIDE.npix
-    
-    
+
+
 # ---------------------------------------------------------------------
 # Métodos
 # ---------------------------------------------------------------------
+
 
 def test_copy_creates_new_instance() -> None:
     """
@@ -452,7 +455,8 @@ def test_alm_with_lmax() -> None:
 
     assert isinstance(alm, np.ndarray)
     assert alm.size > 0
-    
+
+
 # ---------------------------------------------------------------------
 # Validações adicionais
 # ---------------------------------------------------------------------
@@ -677,13 +681,7 @@ def test_repr_contains_main_metadata() -> None:
     result = repr(skymap)
 
     assert result == (
-        "SkyMap("
-        "nside=8, "
-        f"npix={NSIDE.npix}, "
-        "unit='K', "
-        "frame='equatorial', "
-        "field='Q'"
-        ")"
+        f"SkyMap(nside=8, npix={NSIDE.npix}, unit='K', frame='equatorial', field='Q')"
     )
 
 
@@ -863,9 +861,7 @@ def test_apply_mask_preserves_metadata() -> None:
         field="Q",
     )
 
-    masked = skymap.apply_mask(
-        np.ones(NSIDE.npix, dtype=np.float64)
-    )
+    masked = skymap.apply_mask(np.ones(NSIDE.npix, dtype=np.float64))
 
     assert masked is not skymap
     assert masked.nside == skymap.nside
@@ -981,7 +977,8 @@ def test_from_alm_delegates_to_healpy(
         skymap.data,
         generated_data.astype(np.float64),
     )
-    
+
+
 def test_npix_falls_back_to_nside_when_dataset_size_is_none() -> None:
     """
     npix deve usar NSide.npix quando o tamanho do dataset
