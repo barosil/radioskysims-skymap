@@ -5,11 +5,9 @@ from unittest.mock import patch
 import healpy as hp
 import numpy as np
 import pytest
-
 from radioskysims_skymap.domain.skymap.factory import SkyMapFactory
 from radioskysims_skymap.domain.skymap.models import SkyMap
 from radioskysims_skymap.domain.skymap.value_objects import NSide
-
 
 # =============================================================================
 # Fixtures
@@ -99,18 +97,18 @@ def test_factory_default_values(dataset, nside):
 # =============================================================================
 
 
-@patch("radioskysims_skymap.domain.skymap.factory.logger")
-def test_create_logs_and_reraises_exception(mock_logger):
+def test_create_reraises_exception():
+    # B2: o domínio é puro — SkyMapFactory não logga; a exceção é propagada.
     factory = SkyMapFactory()
 
-    with patch(
-        "radioskysims_skymap.domain.skymap.factory.SkyMap",
-        side_effect=RuntimeError("boom"),
+    with (
+        patch(
+            "radioskysims_skymap.domain.skymap.factory.SkyMap",
+            side_effect=RuntimeError("boom"),
+        ),
+        pytest.raises(RuntimeError, match="boom"),
     ):
-        with pytest.raises(RuntimeError):
-            factory.create(
-                dataset=np.zeros(12),
-                nside=NSide(1),
-            )
-
-    mock_logger.exception.assert_called_once()
+        factory.create(
+            dataset=np.zeros(12),
+            nside=NSide(1),
+        )
